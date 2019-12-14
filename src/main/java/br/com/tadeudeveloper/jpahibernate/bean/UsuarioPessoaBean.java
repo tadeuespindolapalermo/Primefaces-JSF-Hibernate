@@ -7,8 +7,8 @@ import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.List;
+//import java.util.ArrayList;
+//import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -29,6 +29,7 @@ import com.google.gson.Gson;
 
 import br.com.tadeudeveloper.jpahibernate.DAO.EmailDAO;
 import br.com.tadeudeveloper.jpahibernate.DAO.UsuarioDAO;
+import br.com.tadeudeveloper.jpahibernate.datatablelazy.LazyDataTableModelUsuarioPessoa;
 import br.com.tadeudeveloper.jpahibernate.model.Email;
 import br.com.tadeudeveloper.jpahibernate.model.UsuarioPessoa;
 
@@ -39,7 +40,10 @@ public class UsuarioPessoaBean implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private UsuarioPessoa usuarioPessoa = new UsuarioPessoa();
-	private List<UsuarioPessoa> listUsuarioPessoa = new ArrayList<>();
+	
+	//private List<UsuarioPessoa> listUsuarioPessoa = new ArrayList<>(); // SEM PAGINATOR
+	private LazyDataTableModelUsuarioPessoa<UsuarioPessoa> listUsuarioPessoa = new LazyDataTableModelUsuarioPessoa<>();
+	
 	private UsuarioDAO<UsuarioPessoa> usuarioDAO = new UsuarioDAO<>();
 	private EmailDAO<Email> emailDAO = new EmailDAO<>();
 	private BarChartModel barChartModel = new BarChartModel();
@@ -49,7 +53,8 @@ public class UsuarioPessoaBean implements Serializable {
 	
 	@PostConstruct
 	public void init() {
-		listUsuarioPessoa = usuarioDAO.listar(UsuarioPessoa.class);
+		//listUsuarioPessoa = usuarioDAO.listar(UsuarioPessoa.class); // SEM PAGINATOR
+		listUsuarioPessoa.load(0, 5, null, null, null);
 		novoUsuario = true;			
 		montarGrafico();
 	}
@@ -57,7 +62,8 @@ public class UsuarioPessoaBean implements Serializable {
 	private void montarGrafico() {
 		barChartModel = new BarChartModel();
 		ChartSeries userSalario = new ChartSeries(); 	// Grupo de funcionários		
-		for (UsuarioPessoa usuarioPessoa : listUsuarioPessoa) { // add salário para o grupo
+		//for (UsuarioPessoa usuarioPessoa : listUsuarioPessoa) { // add salário para o grupo // SEM PAGINATOR
+		for (UsuarioPessoa usuarioPessoa : listUsuarioPessoa.list) { // add salário para o grupo
 			userSalario.set(usuarioPessoa.getNome(), usuarioPessoa.getSalario()); // add salários
 		}
 		barChartModel.addSeries(userSalario); // add o grupo
@@ -126,7 +132,8 @@ public class UsuarioPessoaBean implements Serializable {
 	public String salvar() {
 		usuarioDAO.salvar(usuarioPessoa);
 		if (novoUsuario)
-			listUsuarioPessoa.add(usuarioPessoa);
+			//listUsuarioPessoa.add(usuarioPessoa); // SEM PAGINATOR
+			listUsuarioPessoa.list.add(usuarioPessoa);
 		novoUsuario = false;
 		usuarioPessoa = new UsuarioPessoa();
 		init();
@@ -149,14 +156,17 @@ public class UsuarioPessoaBean implements Serializable {
 		return outcome + "?faces-redirect?true";
 	}
 	
-	public List<UsuarioPessoa> getListUsuarioPessoa() {		
+	//public List<UsuarioPessoa> getListUsuarioPessoa() { // SEM PAGINATOR
+	public LazyDataTableModelUsuarioPessoa<UsuarioPessoa> getListUsuarioPessoa() {		
+		montarGrafico();
 		return listUsuarioPessoa;
 	}
 	
 	public String remover() {
 		try {
 			usuarioDAO.removerUsuario(usuarioPessoa);
-			listUsuarioPessoa.remove(usuarioPessoa);
+			//listUsuarioPessoa.remove(usuarioPessoa); // SEM PAGINATOR
+			listUsuarioPessoa.list.remove(usuarioPessoa);
 			usuarioPessoa = new UsuarioPessoa();
 			init();
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Informação: ", "Removido com sucesso!"));
@@ -172,7 +182,8 @@ public class UsuarioPessoaBean implements Serializable {
 	}
 	
 	public void pesquisar() {
-		listUsuarioPessoa = usuarioDAO.pesquisar(campoPesquisa);
+		//listUsuarioPessoa = usuarioDAO.pesquisar(campoPesquisa); // SEM PAGINATOR
+		listUsuarioPessoa.pesquisar(campoPesquisa);
 		montarGrafico();
 	}
 	
