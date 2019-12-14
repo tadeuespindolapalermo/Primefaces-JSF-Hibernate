@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core">
+	
+	<h:head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Insert title here</title>
+	</h:head>
+	
+	<h:body>
+		<h1>TELEFONE</h1>
+		<h:link value="Página INDEX" outcome="index.jsf"/><br />
+		<h:link value="Página OUTRA PÁGINA" outcome="outra-pagina.jsf"/><br />
+		<h:link value="Página INDEX PRIMEFACES" outcome="indexPrimefaces.jsf"/>
+		
+		<h:form id="formulario">
+			<h:messages showDetail="true" showSummary="false" id="msg"/>
+			
+			<h1>Telefones</h1>
+			
+			<h:panelGrid columns="2">
+				<h:outputLabel>Usuário: </h:outputLabel>
+				<h:outputText value="#{telefoneBean.usuarioPessoa.nome}"/>
+				
+				<h:outputLabel>Número: </h:outputLabel>
+				<h:inputText value="#{telefoneBean.telefoneUser.numero}"/>
+				
+				<h:outputLabel>Tipo: </h:outputLabel>
+				<h:inputText value="#{telefoneBean.telefoneUser.tipo}"/>
+			</h:panelGrid>
+			
+			<br />
+			<br />
+			
+			<h:commandButton value="Salvar" action="#{telefoneBean.salvar}"/>			
+		</h:form>		
+		
+		<h:form id="formTelefones">
+			<h:dataTable value="#{telefoneBean.usuarioPessoa.telefoneUsers}" var="fone"
+			cellpadding="15" border="1" id="tableFone">
+			
+				<f:facet name="header">Lista de telefones</f:facet>
+				
+				<h:column>
+					<f:facet name="header">Id</f:facet>
+					<h:outputText value="#{fone.id}"/>
+				</h:column>
+				
+				<h:column>
+					<f:facet name="header">Número</f:facet>
+					<h:outputText value="#{fone.numero}"/>
+				</h:column>				
+				
+				<h:column>
+					<f:facet name="header">Tipo</f:facet>
+					<h:outputText value="#{fone.tipo}"/>
+				</h:column>
+				
+				<h:column>
+					<f:facet name="header">Remover</f:facet>
+					<h:commandLink action="#{telefoneBean.removerTelefone}" id="btnRemover" immediate="true">
+						<h:graphicImage url="resources/img/remove.png"/>
+						<f:setPropertyActionListener value="#{fone}" target="#{telefoneBean.telefoneUser}" />
+						<f:ajax execute="btnRemover" render="@form :formulario:msg" />
+					</h:commandLink>
+				</h:column>	
+			
+			</h:dataTable>
+		</h:form>
+	</h:body>
+</html>
