@@ -115,7 +115,9 @@
 		</h:form>
 		
 		<h:form id="formTable">		
-			<p:dataTable value="#{usuarioPessoaBean.listUsuarioPessoa}" var="user">
+			<p:dataTable value="#{usuarioPessoaBean.listUsuarioPessoa}" var="user" 
+				rows="5" paginator="true" lazy="true" paginatorPosition="bottom"
+				paginatorTemplate="{FirstPageLink} {PageLinks} {LastPageLink}">
 			
 				<p:column headerText="ID" width="20">
 					<h:outputText value="#{user.id}"/>
